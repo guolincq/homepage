@@ -1,11 +1,24 @@
 import { useMemo, useState } from 'react'
-import { PROFILE, PUBLICATIONS } from '../content/profile'
+import { PROFILE, PUBLICATIONS, SELF_ALIASES } from '../content/profile'
 import { SectionTitle } from '../components/ui'
 
-const TYPE_LABEL = { conference: '会议', journal: '期刊', preprint: '预印本' }
+const TYPE_LABEL = {
+  journal: '期刊',
+  conference: '会议',
+  preprint: '预印本',
+  patent: '专利',
+}
+
+const FILTERS = [
+  ['all', '全部'],
+  ['journal', '期刊'],
+  ['conference', '会议'],
+  ['patent', '专利'],
+]
 
 function isSelf(author) {
-  return author === PROFILE.name.cn || author === PROFILE.name.en
+  const a = String(author || '').trim()
+  return SELF_ALIASES.some((alias) => a === alias || a.includes(alias))
 }
 
 function Authors({ authors }) {
@@ -62,25 +75,23 @@ export default function PublicationList() {
   }, [filter])
 
   const counts = useMemo(() => {
-    const c = { all: PUBLICATIONS.length, conference: 0, journal: 0, preprint: 0 }
+    const c = { all: PUBLICATIONS.length }
     for (const p of PUBLICATIONS) c[p.type] = (c[p.type] || 0) + 1
     return c
   }, [])
+
+  // 放在所有 hook 之后，避免条件调用 hook
+  if (PUBLICATIONS.length === 0) return null
 
   return (
     <section className="section" id="publications">
       <SectionTitle
         id="publications-title"
-        title="论文发表"
-        sub="Publications"
+        title="论文与专利"
+        sub="Publications & Patents"
         action={
           <div className="filter-bar">
-            {[
-              ['all', '全部'],
-              ['conference', '会议'],
-              ['journal', '期刊'],
-              ['preprint', '预印本'],
-            ].map(([key, label]) => (
+            {FILTERS.map(([key, label]) => (
               <button
                 key={key}
                 className={`chip ${filter === key ? 'active' : ''}`}
@@ -102,9 +113,11 @@ export default function PublicationList() {
                 <h3 className="pub-title">{p.title}</h3>
                 <Authors authors={p.authors} />
                 <p className="pub-venue">
-                  <span className="badge">{TYPE_LABEL[p.type] || p.type}</span>
+                  <span className={`badge type-${p.type}`}>{TYPE_LABEL[p.type] || p.type}</span>
                   {p.venueShort ? <em>{p.venueShort}</em> : null}
                   {p.venue ? <span className="pub-venue-full">{p.venue}</span> : null}
+                  {p.position ? <span className="pub-position">第 {p.position}</span> : null}
+                  {p.zone ? <span className="pub-zone">{p.zone}</span> : null}
                   {p.award ? <span className="pub-award">🏅 {p.award}</span> : null}
                 </p>
                 {p.note ? <p className="pub-note">{p.note}</p> : null}

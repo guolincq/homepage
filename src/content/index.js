@@ -1,6 +1,7 @@
 import { parseFrontMatter } from './frontmatter'
 // 只依赖纯字符串工具，绝不 import ../markdown（否则 highlight.js 会被拉回首屏）
 import { plainText, readingTime } from '../utils/text'
+import { resolveAsset } from '../utils/asset'
 
 const modules = import.meta.glob('./posts/*.md', {
   query: '?raw',
@@ -18,7 +19,7 @@ export const posts = Object.entries(modules)
       date: data.date || '',
       category: data.category || '未分类',
       tags: Array.isArray(data.tags) ? data.tags : [],
-      cover: data.cover || '',
+      cover: resolveAsset(data.cover || ''),
       draft: data.draft === true,
       summary: data.summary || plainText(body, 110),
       minutes: readingTime(body),

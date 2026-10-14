@@ -19,13 +19,19 @@ export default function Hero() {
             <span className="profile-name-en">{PROFILE.name.en}</span>
           </h1>
           <p className="profile-role">{PROFILE.role}</p>
-          <p className="profile-affil">
-            {PROFILE.affiliation.cn}
-            <span className="profile-affil-en">{PROFILE.affiliation.en}</span>
-          </p>
-          <p className="profile-lab">
-            {PROFILE.lab.cn} · {PROFILE.office}
-          </p>
+          {PROFILE.affiliation?.cn ? (
+            <p className="profile-affil">
+              {PROFILE.affiliation.cn}
+              {PROFILE.affiliation.en ? (
+                <span className="profile-affil-en">{PROFILE.affiliation.en}</span>
+              ) : null}
+            </p>
+          ) : null}
+          {PROFILE.lab?.cn || PROFILE.office ? (
+            <p className="profile-lab">
+              {[PROFILE.lab?.cn, PROFILE.office].filter(Boolean).join(' · ')}
+            </p>
+          ) : null}
 
           <div className="profile-actions">
             <a className="btn primary sm" href={`mailto:${PROFILE.email}`}>

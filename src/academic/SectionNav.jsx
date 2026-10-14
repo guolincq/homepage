@@ -1,4 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import { AWARDS, SERVICES, TEACHING } from '../content/profile'
+
+const hasAwards = AWARDS.length > 0 || TEACHING.length > 0 || SERVICES.length > 0
 
 export const SECTIONS = [
   { id: 'about', label: '简介' },
@@ -6,7 +9,7 @@ export const SECTIONS = [
   { id: 'education', label: '经历' },
   { id: 'publications', label: '论文' },
   { id: 'projects', label: '项目' },
-  { id: 'awards', label: '荣誉' },
+  ...(hasAwards ? [{ id: 'awards', label: '荣誉' }] : []),
   { id: 'contact', label: '联系' },
 ]
 

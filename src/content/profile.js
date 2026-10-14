@@ -6,27 +6,30 @@
  *  1. 改 SITE      ：站名、标语、导航、每页文章数
  *  2. 改 PROFILE   ：姓名、职称、机构、邮箱、头像、简介、社交链接
  *  3. 改 INTERESTS ：研究兴趣卡片
- *  4. 改 EDUCATION ：教育/工作经历（时间线）
- *  5. 改 PUBLICATIONS：论文列表（按年份倒序，本人名字会加粗）
- *  6. 改 PROJECTS  ：科研项目
- *  7. 改 AWARDS    ：荣誉奖项
+ *  4. 改 SKILLS    ：专业技能
+ *  5. 改 EDUCATION ：教育/工作经历（时间线）
+ *  6. 改 PUBLICATIONS：论文与专利（自动按年份倒序分组）
+ *  7. 改 PROJECTS  ：科研项目
+ *  8. 改 AWARDS    ：荣誉奖项（为空时该区块自动隐藏）
  *
  *  说明：
  *  - 论文 PDF 链接写 '/papers/xxx.pdf'，把 PDF 放到 public/papers/ 下即可生效。
  *    链接留空字符串时，对应按钮不会渲染（避免死链）。
  *  - avatar 留空时用渐变色块 + 姓名首字占位。
  *  - cvUrl 设为 null 时不显示「简历」按钮；填 '/files/cv.pdf' 并把文件放进 public/files/。
+ *  - 本文件末尾有「不公开信息」注释区：单位、电话、微信等，取消注释才会上线展示。
  */
 
 /* --------------------------------- 站点 --------------------------------- */
 
 export const SITE = {
-  name: '林行远 · 学术主页',
-  shortName: '林行远',
-  brandMark: '林',
-  tagline: '分布式系统 · 机器学习系统',
-  description: '林行远的个人学术主页：研究兴趣、论文发表、科研项目与博客笔记。',
-  author: '林行远',
+  name: '郭林 · 学术主页',
+  shortName: '郭林',
+  brandMark: '郭',
+  tagline: '行星光谱数据处理 · 天文图像目标检测',
+  description:
+    '郭林的个人学术主页：行星光谱数据定标与反射率反演、天文图像目标检测方向的研究经历、论文发表与科研项目。',
+  author: '郭林',
   footerNote: '本站为纯静态页面，内容仅代表个人观点。',
   pageSize: 8,
   /** 置 true 会在右上角显示亮/暗切换按钮 */
@@ -41,175 +44,352 @@ export const SITE = {
 /* -------------------------------- 个人信息 -------------------------------- */
 
 export const PROFILE = {
-  name: { cn: '林行远', en: 'Xingyuan Lin' },
-  role: '副教授 · 博士生导师',
-  affiliation: { cn: '示例大学 计算机科学与技术学院', en: 'Example University' },
-  lab: { cn: '智能系统与网络实验室', en: 'Intelligent Systems & Networking Lab' },
-  office: '信息科学楼 A-512',
-  location: '中国 · 示例市',
-  email: 'lin@example.edu',
+  name: { cn: '郭林', en: 'Lin Guo' },
+  role: '助理研究员',
+  /** 以下四项留空则不渲染（隐私考虑，真实值见文件末尾注释区） */
+  affiliation: { cn: '', en: '' },
+  lab: { cn: '', en: '' },
+  office: '',
+  location: '',
+
+  email: 'guolin_cq@163.com',
   /** 留空 → 渐变色块 + 姓名首字；也可填 '/images/avatar.jpg'（文件放 public/images/） */
   avatar: '',
   /** null → 不显示简历按钮；填 '/files/cv.pdf' 并把文件放进 public/files/ */
   cvUrl: null,
 
   bio: [
-    '我是示例大学计算机科学与技术学院的副教授，主要研究分布式系统与机器学习系统的交叉问题，关注如何在真实的异构环境中让大规模模型训练与推理既快又稳。',
-    '近年工作集中在两条主线：一是面向广域与边缘场景的一致性协议与容错机制，二是大模型推理系统的显存调度与请求编排。相关成果发表于 OSDI、EuroSys、MLSys 等会议。',
+    '博士期间参与月球与深空探测相关光谱载荷数据的数据处理与方法优化，涉及嫦娥四号可见与近红外成像光谱仪、嫦娥五号矿物光谱仪、祝融号短波红外光谱仪与天问一号中分辨率相机。工作集中在反射率反演、热校正与地形校正等数据校正方法的建立，以及基于校正数据的月壤水含量、光度特性与火星表面物质成分分析。',
+    '目前主要研究方向为天文图像目标检测，关注自适应分割阈值确定方法。相关成果发表于 Journal of Geophysical Research: Planets、The Astronomical Journal、Nature Communications、Science Advances 等期刊，并已形成发明专利两项（其中一项实审中）。',
   ],
 
   social: [
-    { label: 'Google Scholar', icon: '🎓', url: 'https://scholar.google.com/citations?user=EXAMPLE' },
-    { label: 'GitHub', icon: '🐙', url: 'https://github.com/example-lin' },
-    { label: 'ORCID', icon: '🆔', url: 'https://orcid.org/0000-0000-0000-0000' },
-    { label: 'DBLP', icon: '📚', url: 'https://dblp.org/pid/000/000' },
-    { label: '知乎', icon: '💬', url: 'https://www.zhihu.com/people/example' },
+    { label: 'GitHub', icon: '🐙', url: 'https://github.com/guolincq' },
+    // 简历里未提供，拿到后取消注释即可显示
+    // { label: 'Google Scholar', icon: '🎓', url: 'https://scholar.google.com/citations?user=XXXX' },
+    // { label: 'ORCID', icon: '🆔', url: 'https://orcid.org/0000-0000-0000-0000' },
   ],
 }
+
+/** 作者列表里代表本人的写法，命中即加粗 */
+export const SELF_ALIASES = ['郭林', 'Guo L', 'Guo Lin', 'Lin Guo']
 
 /* ------------------------------- 研究兴趣 ------------------------------- */
 
 export const INTERESTS = [
   {
-    icon: '🧩',
-    title: '分布式系统与共识协议',
-    desc: '研究广域与异构环境下的状态机复制、BFT/Raft 类协议的可扩展性，以及一致性与延迟之间的权衡机制。',
-    keywords: ['共识算法', '状态机复制', '一致性模型', '容错'],
+    icon: '🪐',
+    title: '行星光谱数据处理与在轨定标',
+    desc: '建立就位探测光谱的反射率反演、热校正、地形校正与波长漂移校正方法，把原始辐亮度数据转换为可比较的物质成分信息。',
+    keywords: ['反射率反演', '热校正', '地形校正', '波长漂移'],
   },
   {
-    icon: '⚙️',
-    title: '机器学习系统',
-    desc: '面向大模型训练与推理的系统优化：显存调度、算子融合、请求批处理与多租户场景下的资源隔离。',
-    keywords: ['推理加速', '显存优化', '调度', 'GPU 共享'],
+    icon: '🔭',
+    title: '天文与行星图像目标检测',
+    desc: '研究天文图像中目标的自适应分割阈值确定方法，并结合深度学习处理复杂背景下的检测与分割问题。',
+    keywords: ['自适应阈值', '目标检测', '图像分割', '深度学习'],
   },
   {
-    icon: '📡',
-    title: '边缘计算与联邦学习',
-    desc: '在算力与带宽受限的终端设备上完成协同训练，关注通信压缩、异构聚合与隐私保护的联合设计。',
-    keywords: ['联邦学习', '通信压缩', '异构设备', '差分隐私'],
+    icon: '🚀',
+    title: '月球与深空探测载荷数据方法优化',
+    desc: '面向嫦娥四号、嫦娥五号、祝融号、天问一号等任务的光谱与成像载荷，开展数据处理流程设计与方法优化。',
+    keywords: ['嫦娥四号', '嫦娥五号', '祝融号', '天问一号'],
   },
   {
-    icon: '🛡️',
-    title: '可信与高效 AI',
-    desc: '构建可复现的评测基准与方法论，研究模型在分布偏移与对抗扰动下的鲁棒性及推理阶段的安全问题。',
-    keywords: ['鲁棒性', '评测基准', '可复现性', '推理安全'],
+    icon: '🧮',
+    title: '科学计算与科研工具链',
+    desc: '以 Python 科学计算栈支撑数据处理流水线，并用版本控制、Markdown/LaTeX 与文献管理工具保证结果可复现。',
+    keywords: ['Python', 'Numpy/Pandas', 'LaTeX', 'Zotero'],
   },
+]
+
+/* -------------------------------- 专业技能 -------------------------------- */
+
+export const SKILLS = [
+  'CET-6 / 博士学位英语',
+  'Python 编程',
+  'Numpy / Pandas / Scipy / Matplotlib',
+  'Git / JupyterLab / VSCode',
+  'Markdown / LaTeX',
+  'Zotero / EndNote',
+  '深度学习（了解）',
 ]
 
 /* ---------------------------- 教育 / 工作经历 ---------------------------- */
 
 export const EDUCATION = [
   {
-    period: '2023 — 至今',
-    title: '副教授',
-    org: '示例大学 计算机科学与技术学院',
-    note: '主讲《分布式系统》《机器学习系统导论》；指导硕士生 6 名、博士生 2 名。',
+    period: '2020.09 — 2024.07',
+    title: '理学博士 · 天文技术与方法',
+    org: '中国科学院大学 / 国家天文台',
+    note: '博士期间参与月球与深空探测相关光谱载荷数据的数据处理与方法优化。',
   },
   {
-    period: '2018 — 2023',
-    title: '工学博士 · 计算机科学与技术',
-    org: '示例大学',
-    note: '导师：示例教授。博士论文获校优秀博士学位论文。',
+    period: '2018.09 — 2020.07',
+    title: '硕博连读（硕士段）· 天体物理',
+    org: '中国科学院大学 / 国家天文台',
+    note: '',
   },
   {
-    period: '2014 — 2018',
-    title: '工学学士 · 计算机科学与技术',
-    org: '示例大学',
-    note: '校优秀毕业生，本科期间参与分布式存储课题组的早期原型开发。',
+    period: '2014.09 — 2018.07',
+    title: '理学学士 · 核物理',
+    org: '北京航空航天大学',
+    note: '',
   },
 ]
 
-/* -------------------------------- 论文发表 -------------------------------- */
+/* -------------------------------- 论文与专利 -------------------------------- */
 
 /**
- * type: 'conference' | 'journal' | 'preprint'
- * authors: 字符串数组，与 PROFILE.name.en 或 PROFILE.name.cn 相同的项会自动加粗
- * links: 值为空字符串时不渲染对应按钮
+ * type:   'journal' | 'conference' | 'preprint' | 'patent'
+ * authors: 字符串数组，命中 SELF_ALIASES 的项自动加粗
+ * position: 作者位次，形如 '1/8'；共同一作在 note 里说明
+ * zone:   中科院分区，形如 '中科院1区'
+ * links:  值为空字符串时不渲染对应按钮
  */
 export const PUBLICATIONS = [
   {
-    id: 'wiggle-2026',
+    id: 'patent-2026-astronomy-detection',
     year: 2026,
-    type: 'conference',
-    title: 'Wiggle: 面向广域部署的自适应共识协议',
-    authors: ['林行远', '示例合作者', '另一位合作者'],
-    venue: '第 20 届 USENIX 操作系统设计与实现研讨会（OSDI \'26）',
-    venueShort: 'OSDI 2026',
-    award: '最佳论文',
-    links: { pdf: '', code: 'https://github.com/example-lin/wiggle', bib: '', doi: '' },
-    note: '提出根据网络往返时延动态调整法定人数的机制，在跨地域部署下将提交延迟降低约 41%。',
-  },
-  {
-    id: 'orchestra-2025',
-    year: 2025,
-    type: 'conference',
-    title: 'Orchestra: 大模型推理服务的请求编排与显存协同调度',
-    authors: ['林行远', '合作者 A', '合作者 B', '合作者 C'],
-    venue: '第 39 届神经信息处理系统大会（NeurIPS \'25）',
-    venueShort: 'NeurIPS 2025',
+    type: 'patent',
+    title: '一种自适应天文图像目标检测分割阈值确定方法和装置',
+    authors: ['郭林', '薛武'],
+    position: '1/2',
+    zone: '',
+    venue: '发明专利（实审中）',
+    venueShort: '发明专利',
     award: '',
-    links: { pdf: '', code: 'https://github.com/example-lin/orchestra', bib: '', doi: '' },
-    note: '通过联合优化请求批处理与 KV Cache 换入换出，在同等 SLO 下提升吞吐 1.8 倍。',
+    links: { pdf: '', code: '', bib: '', doi: '' },
+    note: '',
   },
   {
-    id: 'tocs-2025',
+    id: 'isp2025-color',
     year: 2025,
     type: 'journal',
-    title: '异构集群中状态机复制的一致性代价分析',
-    authors: ['林行远', '合作者 D'],
-    venue: 'ACM Transactions on Computer Systems, 43(2), 1-34',
-    venueShort: 'ACM TOCS 2025',
+    title:
+      'A new approach to color correction and equalization for generating mars global color image mosaics from Tianwen-1 MoRIC images',
+    authors: ['Ren X', 'et al.'],
+    position: '9/16',
+    zone: '中科院1区',
+    venue: 'ISPRS Journal of Photogrammetry and Remote Sensing, 2025',
+    venueShort: 'ISPRS J P&RS 2025',
     award: '',
-    links: { pdf: '', code: '', bib: '', doi: '' },
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1016/j.isprsjprs.2025.04.024' },
     note: '',
   },
   {
-    id: 'fedsketch-2024',
+    id: 'na2025-ce6-water',
+    year: 2025,
+    type: 'journal',
+    title: 'Lunar surface and subsurface water revealed by Chang’e-6',
+    authors: ['Liu B', 'Zeng X', 'et al.'],
+    position: '6/13',
+    zone: '中科院1区',
+    venue: 'Nature Astronomy, 2025',
+    venueShort: 'Nature Astronomy 2025',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1038/s41550-025-02668-7' },
+    note: '',
+  },
+  {
+    id: 'jgr2025-weathering',
+    year: 2025,
+    type: 'journal',
+    title: 'In Situ Observation of Weathering Rinds at the Zhurong Landing Site, Mars',
+    authors: ['Zhang Q', 'Carter J', 'et al.'],
+    position: '6/13',
+    zone: '中科院1区',
+    venue: 'Journal of Geophysical Research: Planets, 2025, 130(9)',
+    venueShort: 'JGR-Planets 2025',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1029/2025JE009196' },
+    note: '',
+  },
+  {
+    id: 'grl2025-hydrous',
+    year: 2025,
+    type: 'journal',
+    title: 'Hydrous Components of Dusty Surfaces Inferred From Zhurong In Situ Observations',
+    authors: ['Zhang Q', 'Vincendon M', 'et al.'],
+    position: '6/13',
+    zone: '中科院1区',
+    venue: 'Geophysical Research Letters, 2025, 52(18)',
+    venueShort: 'GRL 2025',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1029/2025GL115266' },
+    note: '',
+  },
+  {
+    id: 'jgr2024-ce5-photometric',
+    year: 2024,
+    type: 'journal',
+    title: 'Chang’E-5 In Situ Spectra Reveal Photometric Properties of the Lunar Surface',
+    authors: ['Guo L', 'et al.'],
+    position: '1/8',
+    zone: '中科院1区',
+    venue: 'Journal of Geophysical Research: Planets, 2024, 129(2)',
+    venueShort: 'JGR-Planets 2024',
+    award: '第一作者',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1029/2023JE007847' },
+    note: '利用校正后的就位光谱数据开展月面采样区光度特性研究。',
+  },
+  {
+    id: 'aj2024-ce5-thermal',
+    year: 2024,
+    type: 'journal',
+    title:
+      'Chang’E-5 In Situ Spectra Revealing Meter-scale Surface Temperature Distribution Characteristic of the Moon',
+    authors: ['Ren X', 'Guo L', 'et al.'],
+    position: '1/12',
+    zone: '中科院2区',
+    venue: 'The Astronomical Journal, 2024, 168(3)',
+    venueShort: 'Astron. J. 2024',
+    award: '共同第一作者',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.3847/1538-3881/ad566f' },
+    note: '建立就位光谱数据的热校正方法。',
+  },
+  {
+    id: 'grsl2024-mars-frame',
+    year: 2024,
+    type: 'journal',
+    title: 'A New Global Reference Frame for Mars From Tianwen-1 Moderate Resolution Images',
+    authors: ['Yan W', 'et al.'],
+    position: '8/13',
+    zone: '中科院3区',
+    venue: 'IEEE Geoscience and Remote Sensing Letters, 2024',
+    venueShort: 'IEEE GRSL 2024',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1109/LGRS.2024.3448616' },
+    note: '',
+  },
+  {
+    id: 'scib2024-mars-map',
+    year: 2024,
+    type: 'journal',
+    title: 'A 76-m per pixel global color image dataset and map of Mars by Tianwen-1',
+    authors: ['Liu J', 'Ren X', 'et al.'],
+    position: '11/18',
+    zone: '中科院1区',
+    venue: 'Science Bulletin, 2024',
+    venueShort: 'Science Bulletin 2024',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1016/j.scib.2024.04.045' },
+    note: '',
+  },
+  {
+    id: 'lpsc2024',
     year: 2024,
     type: 'conference',
-    title: 'FedSketch: 联邦学习中的梯度草图压缩与误差补偿',
-    authors: ['合作者 E', '林行远', '合作者 F'],
-    venue: '第 19 届欧洲计算机系统会议（EuroSys \'24）',
-    venueShort: 'EuroSys 2024',
-    award: '',
-    links: { pdf: '', code: 'https://github.com/example-lin/fedsketch', bib: '', doi: '' },
-    note: '在低带宽链路上把上行通信量压缩两个数量级，同时保持收敛速度。',
-  },
-  {
-    id: 'vmm-2024',
-    year: 2024,
-    type: 'conference',
-    title: '面向多租户 GPU 的细粒度显存虚拟化',
-    authors: ['林行远', '合作者 G', '合作者 H'],
-    venue: '第七届机器学习与系统会议（MLSys \'24）',
-    venueShort: 'MLSys 2024',
+    title: '（标题待补）',
+    authors: ['Chen Z', 'Caravaca G', 'et al.'],
+    position: '9/22',
+    zone: '',
+    venue: '55th Lunar and Planetary Science Conference, 2024, 1308',
+    venueShort: 'LPSC 2024',
     award: '',
     links: { pdf: '', code: '', bib: '', doi: '' },
-    note: '',
+    note: '简历未提供 DOI，标题待手动补齐。',
   },
   {
-    id: 'edgecache-2023',
+    id: 'patent-2023-mars-calibration',
     year: 2023,
-    type: 'conference',
-    title: '边缘缓存的一致性感知副本放置',
-    authors: ['林行远', '合作者 I'],
-    venue: 'ACM SIGCOMM 2023 边缘计算 workshop',
-    venueShort: 'SIGCOMM 2023 (Workshop)',
+    type: 'patent',
+    title: '适用于火星就位探测光谱在轨定标和反射率确定方法',
+    authors: ['郭林', '任鑫', '等'],
+    position: '1/8',
+    zone: '',
+    venue: '发明专利',
+    venueShort: '发明专利',
     award: '',
     links: { pdf: '', code: '', bib: '', doi: '' },
+    note: '建立祝融号短波红外光谱仪的波长漂移校正与反射率计算方法。',
+  },
+  {
+    id: 'sciadv2023-mars-water',
+    year: 2023,
+    type: 'journal',
+    title: 'Modern water at low latitudes on Mars: Potential evidence from dune surfaces',
+    authors: ['Qin X', 'Ren X', 'et al.'],
+    position: '14/21',
+    zone: '中科院1区',
+    venue: 'Science Advances, 2023',
+    venueShort: 'Science Advances 2023',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1126/sciadv.add8868' },
+    note: '为该项研究提供祝融号在轨探测数据处理支持。',
+  },
+  {
+    id: 'grl2023-dust',
+    year: 2023,
+    type: 'journal',
+    title: 'Dust Deposition at Zhurong Landing Site From Multispectral Camera Observations',
+    authors: ['Zhang Q', 'Liu D', 'et al.'],
+    position: '5/10',
+    zone: '中科院1区',
+    venue: 'Geophysical Research Letters, 2023',
+    venueShort: 'GRL 2023',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1029/2023GL104676' },
     note: '',
   },
   {
-    id: 'survey-2023',
-    year: 2023,
-    type: 'preprint',
-    title: '机器学习系统的可复现性：问题、成因与实践建议',
-    authors: ['林行远', '合作者 J'],
-    venue: 'arXiv:2308.00001 [cs.DC]',
-    venueShort: 'arXiv 2023',
+    id: 'natcomm2022-ce5-water',
+    year: 2022,
+    type: 'journal',
+    title:
+      'Evidence of water on the lunar surface from Chang’E-5 in-situ spectra and returned samples',
+    authors: ['Liu J', 'Liu B', 'et al.'],
+    position: '6/25',
+    zone: '中科院1区',
+    venue: 'Nature Communications, 2022',
+    venueShort: 'Nat. Commun. 2022',
     award: '',
-    links: { pdf: '', code: '', bib: '', doi: '' },
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1038/s41467-022-30807-5' },
+    note: '利用校正后的数据计算 CE-5 着陆区月壤水含量。',
+  },
+  {
+    id: 'grl2022-ce4-mafic',
+    year: 2022,
+    type: 'journal',
+    title:
+      'Dusty Mafic Rocks Along the Path of Chang’E-4 Rover: Initial Analysis of the Image Cubes of the Onboard Visible and Near-Infrared Imaging Spectrometer',
+    authors: ['Wang X', 'Liu J', 'et al.'],
+    position: '5/11',
+    zone: '中科院1区',
+    venue: 'Geophysical Research Letters, 2022',
+    venueShort: 'GRL 2022',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1029/2021gl095033' },
     note: '',
+  },
+  {
+    id: 'icarus2022-mscam',
+    year: 2022,
+    type: 'journal',
+    title:
+      'A reflectance calibration method for Multispectral Camera (MSCam) on the Zhurong rover',
+    authors: ['Zhang Q', 'Liu D', 'et al.'],
+    position: '4/12',
+    zone: '中科院2区',
+    venue: 'Icarus, 2022',
+    venueShort: 'Icarus 2022',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1016/j.icarus.2022.115208' },
+    note: '',
+  },
+  {
+    id: 'prc2020-pairing',
+    year: 2020,
+    type: 'journal',
+    title: 'Isospin-density-dependent pairing from infinite nuclear matter to finite nuclei',
+    authors: ['Meng X', 'Zhang S', 'et al.'],
+    position: '3/5',
+    zone: '中科院2区',
+    venue: 'Physical Review C, 2020',
+    venueShort: 'Phys. Rev. C 2020',
+    award: '',
+    links: { pdf: '', code: '', bib: '', doi: 'https://doi.org/10.1103/PhysRevC.102.064322' },
+    note: '本科阶段工作。',
   },
 ]
 
@@ -217,50 +397,75 @@ export const PUBLICATIONS = [
 
 export const PROJECTS = [
   {
-    name: '面向大模型推理的显存调度理论与系统实现',
-    role: '主持',
-    funder: '国家自然科学基金青年科学基金项目',
-    grantNo: '62xxxx01',
-    period: '2025 — 2027',
-    desc: '研究多租户推理场景下的显存分配下界，并构建可落地的调度原型系统。',
-  },
-  {
-    name: '分布式智能计算平台',
-    role: '参与',
-    funder: '国家重点研发计划（子课题）',
-    grantNo: '2024YFBxxxxxx',
-    period: '2024 — 2027',
-    desc: '负责跨地域算力调度与一致性保障模块的设计与实现。',
-  },
-  {
-    name: '边缘端联邦学习通信优化',
-    role: '主持',
-    funder: '校企合作项目',
+    name: '天文图像目标检测与自适应分割阈值方法',
+    role: '负责',
+    funder: '—',
     grantNo: '—',
-    period: '2023 — 2025',
-    desc: '面向真实移动网络的梯度压缩方案，已在合作方测试环境中部署验证。',
+    period: '2024.12 — 至今',
+    desc: '研究自适应天文图像目标检测分割阈值确定方法，相关成果已形成发明专利（实审中）。',
+  },
+  {
+    name: '嫦娥五号 矿物光谱仪数据校正与月壤水含量反演',
+    role: '参与',
+    funder: '博士期间课题',
+    grantNo: '—',
+    period: '博士期间（2020 — 2024）',
+    desc: '利用原始就位光谱数据建立反射率计算、热校正、地形校正方法；热校正成果发表于 The Astronomical Journal（共同一作），光度特性研究发表于 JGR-Planets（一作），月壤水含量成果发表于 Nature Communications。',
+  },
+  {
+    name: '祝融号 短波红外光谱仪在轨定标',
+    role: '参与',
+    funder: '博士期间课题',
+    grantNo: '—',
+    period: '博士期间（2020 — 2024）',
+    desc: '建立波长漂移校正与反射率计算方法，形成发明专利一项，为课题组 Science Advances 成果提供数据支持。',
+  },
+  {
+    name: '天问一号 中分辨率相机全球影像图',
+    role: '参与',
+    funder: '博士期间课题',
+    grantNo: '—',
+    period: '博士期间（2020 — 2024）',
+    desc: '参与「中国首次火星探测火星全球影像图」制作，承担其中光度校正工作，影像由国家航天局于 2023 年 4 月 24 日发布。',
+  },
+  {
+    name: '嫦娥四号 可见与近红外成像光谱仪数据处理',
+    role: '参与',
+    funder: '博士期间课题',
+    grantNo: '—',
+    period: '博士期间（2020 — 2024）',
+    desc: '编写光谱仪辐亮度数据反射率计算程序，进行光谱仪图像与避障相机图像配准，开展巡视路径上光谱数据综合分析。',
   },
 ]
 
 /* -------------------------------- 荣誉奖项 -------------------------------- */
+/* 简历未提供，留空时该区块自动隐藏 */
 
-export const AWARDS = [
-  { year: '2026', name: '优秀青年科学基金', org: '国家自然科学基金委员会' },
-  { year: '2025', name: '最佳论文奖', org: 'USENIX OSDI 2026' },
-  { year: '2022', name: '博士研究生国家奖学金', org: '教育部' },
-]
+export const AWARDS = []
 
 /* -------------------------------- 学术服务 -------------------------------- */
 
-export const SERVICES = [
-  'OSDI / EuroSys / MLSys / ACM TOCS 审稿人',
-  'CCF 分布式计算与系统专委会 委员',
-  'EuroSys 2026 Poster & Demo 分委会成员',
-]
+export const SERVICES = []
 
 /* -------------------------------- 教学工作 -------------------------------- */
 
-export const TEACHING = [
-  { term: '2026 春', course: '分布式系统（本科生）', note: '选课 92 人' },
-  { term: '2025 秋', course: '机器学习系统导论（研究生）', note: '选课 45 人' },
-]
+export const TEACHING = []
+
+/* ============================================================================
+ *  以下为「不公开信息」——取消注释并同步到上方 PROFILE 相应字段才会上线展示。
+ *  当前站点按你的要求只公开邮箱与学术链接。
+ * ============================================================================
+ *
+ *  PROFILE.affiliation = { cn: '航天工程大学', en: 'Space Engineering University' }
+ *  PROFILE.lab         = { cn: '（实验室/教研室名称）', en: '' }
+ *  PROFILE.office      = '（办公室门牌）'
+ *  PROFILE.location    = '中国 · （城市）'
+ *  PROFILE.phone       = '19908374862'      // 组件目前不渲染电话，需自行加字段
+ *  PROFILE.wechat      = 'guolin_cq'        // 组件目前不渲染微信，需自行加字段
+ *  出生年月：1996.05
+ *  籍贯：重庆市
+ *  政治面貌：中共党员
+ *
+ *  注意：以上信息一旦取消注释即会出现在公开站点上，可被搜索引擎抓取。
+ * ============================================================================
+ */

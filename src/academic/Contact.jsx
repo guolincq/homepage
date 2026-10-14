@@ -2,11 +2,14 @@ import { PROFILE } from '../content/profile'
 import { SectionTitle } from '../components/ui'
 
 export default function Contact() {
+  // 只渲染有值的项：单位/办公室/所在地留空时不会出现（隐私考虑）
   const items = [
     { icon: '✉', label: '邮箱', value: PROFILE.email, href: `mailto:${PROFILE.email}` },
-    { icon: '🏢', label: '办公室', value: `${PROFILE.office}，${PROFILE.affiliation.cn}`, href: null },
-    { icon: '📍', label: '所在地', value: PROFILE.location, href: null },
-  ]
+    PROFILE.office
+      ? { icon: '🏢', label: '办公室', value: PROFILE.office, href: null }
+      : null,
+    PROFILE.location ? { icon: '📍', label: '所在地', value: PROFILE.location, href: null } : null,
+  ].filter(Boolean)
 
   return (
     <section className="section" id="contact">

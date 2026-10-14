@@ -145,14 +145,65 @@ src/
 
 ---
 
-## 五、部署
+## 五、部署（GitHub Pages）
 
-构建产物在 `dist/`，是纯静态文件，可以丢到任何静态托管：
+线上地址：**https://guolincq.github.io/homepage/**
 
-- **任意对象存储 / nginx / GitHub Pages**：直接上传 `dist/`
+### 工作机制
+
+推到 `main` 分支即触发 `.github/workflows/deploy.yml`：安装依赖 → `npm run build` →
+上传 `dist/` → 部署到 Pages。约 1–2 分钟生效。
+
+### ⚠️ `base` 是硬编码的，改部署路径必须同步
+
+`vite.config.js` 里 `base: '/homepage/'` 与仓库名绑定。三个后果：
+
+1. 本地 `npm run dev` / `npm run preview` 会自动 302 到 `/homepage/` 前缀 —— **这是预期行为**，
+   想临时用根路径：`npm run dev -- --base=/`
+2. 换仓库名 / 换域名时，必须同步改这一行，否则**资源 404 → 页面白屏**
+   （HashRouter 下子页面不会 404，白屏是 base 配错的唯一症状）
+3. 文章 front-matter 的 `cover` 与正文图片 `![](/images/...)` 是普通字符串，
+   Vite 不会自动加前缀 —— 已由 `src/utils/asset.js` 的 `resolveAsset()` 统一处理。
+   **新增图片资源时保持 `/images/xxx` 写法即可，不要手写 `/homepage/images/xxx`。**
+
+### 首次部署需要在 GitHub 网页端做两件事
+
+1. 新建空仓库 `homepage`（Public，**不要**勾选 README/.gitignore/license）
+2. Settings → Pages → Source → 选 **GitHub Actions**
+
+> Source 没改就 push，`configure-pages` 步骤会报 `Get Pages site failed`。
+> 改对后不用重新 push，到 Actions 页 **Re-run failed jobs** 即可。
+
+### 关联远端并推送（SSH）
+
+```bash
+git remote add origin git@github.com:guolincq/homepage.git
+git push -u origin main
+```
+
+建库时不小心带了 README 导致 push 被拒 → `git pull --rebase origin main` 后重推。
+**不要**用裸 `git push -f`。
+
+### 验证
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" https://guolincq.github.io/homepage/
+curl -sS https://guolincq.github.io/homepage/ | grep -o 'src="[^"]*assets[^"]*"'
+# 期望：src="/homepage/assets/index-xxxx.js"（带 /homepage/ 前缀），且该 URL 返回 200
+```
+
+### 回滚
+
+1. **紧急止血**：Actions → 选上一次成功的 run → **Re-run jobs**（成本最低，不动 git 历史）
+2. **正式回滚**：`git revert <commit>` → `git push`（保留历史，推荐）
+
+### 其他托管方式
+
+构建产物在 `dist/`，是纯静态文件，也可以丢到任何静态托管：
+
+- **任意对象存储 / nginx**：直接上传 `dist/`
 - **本机或容器**：`npm install && npm run build && npm start`（注意 `server.mjs` 依赖 vite，
   部署命令必须装完整依赖，不能只装 `--production`）
-- **WorkBuddy 发布为应用**：目录指向项目根目录即可
 
 ---
 
@@ -166,8 +217,23 @@ src/
 
 ---
 
-## 七、已知边界
+## 七、内容与隐私
+
+站点内容全部来自 `src/content/profile.js`。按当前配置：
+
+- **公开**：姓名、职称、研究方向、教育经历、论文与专利、科研项目、邮箱、GitHub
+- **不公开**：单位、办公室、所在地、手机、微信、出生年月、政治面貌、籍贯
+  —— 这些值写在 `profile.js` 末尾的**注释区**，取消注释并同步到 `PROFILE` 相应字段才会展示
+
+`src/content/posts/` 里的 4 篇文章是**示例占位**（顶部有 HTML 注释标明），
+用于展示 Markdown 渲染能力，发布前请替换为你自己的文章。
+
+## 八、已知边界
 
 - 纯静态站点的 SEO 依赖外部抓取；学术主页的可见度主要来自 Google Scholar / DBLP 外链。
-- 项目根目录的 `.wbapp_*.genie` 与 `.workbuddy/` 是 WorkBuddy 部署标识，不要删除。
+- 简历未提供 Google Scholar / ORCID 链接 → 目前只显示 GitHub，拿到后取消 `profile.js` 里的注释即可。
+- 简历未提供奖项 / 教学 / 学术服务 → 对应区块为空时自动隐藏。
+- LPSC 2024 会议论文无 DOI，标题显示「标题待补」，需手动补齐。
+- 项目根目录的 `.wbapp_*.genie` 与 `.workbuddy/` 是 WorkBuddy 本地标识，已在 `.gitignore` 中排除，
+  不会进公开仓库。
 - 本仓库有 git 版本控制，重建前的旧版本（云端博客版）在首个 commit 里可查。

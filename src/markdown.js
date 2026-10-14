@@ -18,6 +18,7 @@ import xml from 'highlight.js/lib/languages/xml'
 import yaml from 'highlight.js/lib/languages/yaml'
 import DOMPurify from 'dompurify'
 import { escapeHtml } from './utils/text'
+import { resolveAsset } from './utils/asset'
 
 const LANGUAGES = { bash, javascript, json, plaintext, python, sql, typescript, xml, yaml }
 for (const [name, lang] of Object.entries(LANGUAGES)) hljs.registerLanguage(name, lang)
@@ -52,7 +53,7 @@ renderer.code = function code(source, infostring) {
 }
 
 renderer.image = function image(href, title, text) {
-  const src = String(href || '')
+  const src = resolveAsset(String(href || ''))
   return `<figure class="md-figure"><img src="${src}" alt="${escapeHtml(text || '')}" loading="lazy"${
     title ? ` title="${escapeHtml(title)}"` : ''
   } />${text ? `<figcaption>${escapeHtml(text)}</figcaption>` : ''}</figure>`

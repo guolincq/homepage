@@ -1,4 +1,4 @@
-import { PROFILE } from '../content/profile'
+import { PROFILE, SKILLS } from '../content/profile'
 import { SectionTitle } from '../components/ui'
 
 export default function Bio() {
@@ -10,6 +10,19 @@ export default function Bio() {
           <p key={i}>{para}</p>
         ))}
       </div>
+
+      {SKILLS.length > 0 ? (
+        <div className="skills-block">
+          <h4 className="sub-block-title">专业技能</h4>
+          <div className="interest-keywords">
+            {SKILLS.map((s) => (
+              <span className="kw-pill" key={s}>
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }
