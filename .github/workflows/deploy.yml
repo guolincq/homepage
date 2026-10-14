@@ -23,9 +23,11 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    # 注意：这里刻意不声明 environment: github-pages。
+    # 若在仓库为空时启用 Pages 的 "GitHub Actions" 源，GitHub 会创建 github-pages
+    # 环境并附带部署分支策略，该策略可能不包含后来才推送的 main 分支，
+    # 导致 job 在任何步骤执行前就被拒（表现为 steps=0、2 秒内失败）。
+    # deploy-pages 本身不依赖该声明，去掉即可正常部署。
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

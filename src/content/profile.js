@@ -280,7 +280,7 @@ export const PUBLICATIONS = [
     id: 'lpsc2024',
     year: 2024,
     type: 'conference',
-    title: '（标题待补）',
+    title: 'Unexpected Aeolian Buildup Illustrates Low Modern Erosion Along Zhurong Traverse on Mars',
     authors: ['Chen Z', 'Caravaca G', 'et al.'],
     position: '9/22',
     zone: '',
