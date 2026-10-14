@@ -6,5 +6,17 @@ export default defineConfig({
   plugins: [react()],
   server: { host: '0.0.0.0', port: 5173, allowedHosts: true },
   preview: { host: '0.0.0.0', port: 4173, allowedHosts: true },
-  build: { outDir: 'dist', assetsDir: 'assets', chunkSizeWarningLimit: 1200 },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    target: 'es2020',
+    chunkSizeWarningLimit: 700,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+        },
+      },
+    },
+  },
 })

@@ -1,90 +1,86 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getPost } from '../api'
-import { errorMessage } from '../cloud'
-import { useAuth } from '../auth'
-import { Empty, MarkdownView, Spinner, formatDate, useToast } from '../components'
-import { readingTime } from '../markdown'
+import { getPost, posts } from '../content'
+import { SITE } from '../content/profile'
+import MarkdownView from '../components/MarkdownView'
+import { Empty } from '../components/ui'
+import { formatDate } from '../utils/text'
 
 export default function PostDetail() {
-  const { id } = useParams()
-  const [post, setPost] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const { user } = useAuth()
-  const toast = useToast()
+  const { slug } = useParams()
+  const post = getPost(slug)
 
   useEffect(() => {
-    let alive = true
-    setLoading(true)
-    setError('')
-    getPost(id)
-      .then((row) => {
-        if (!alive) return
-        setPost(row)
-        if (row?.title) document.title = `${row.title} · 博客`
-      })
-      .catch((e) => {
-        if (!alive) return
-        const msg = errorMessage(e, '文章加载失败')
-        setError(msg)
-        toast.error(msg)
-      })
-      .finally(() => alive && setLoading(false))
+    document.title = post ? `${post.title} · ${SITE.shortName}` : SITE.name
+    window.scrollTo({ top: 0 })
     return () => {
-      alive = false
-      document.title = '个人博客'
+      document.title = SITE.name
     }
-  }, [id, toast])
+  }, [post])
 
-  if (loading) return <Spinner />
-  if (error || !post) return <Empty title={error || '文章不存在或已删除'} />
+  if (!post) {
+    return (
+      <Empty
+        title="没有找到这篇文章"
+        extra={
+          <Link to="/blog" className="btn primary">
+            返回博客列表
+          </Link>
+        }
+      />
+    )
+  }
 
-  const isOwner = Boolean(user && post.owner_id === user.id)
+  const index = posts.findIndex((p) => p.slug === post.slug)
+  const prev = posts[index - 1] // posts 按日期倒序，index-1 是更新的
+  const next = posts[index + 1]
 
   return (
-    <div>
-      <div style={{ marginBottom: 14 }}>
-        <Link to="/" className="btn sm ghost">
+    <article className="article">
+      <div className="article-head">
+        <Link to="/blog" className="back-link">
           ← 返回列表
         </Link>
-        {isOwner ? (
-          <Link to={`/admin/edit/${post.id}`} className="btn sm primary" style={{ marginLeft: 8 }}>
-            编辑
-          </Link>
+        <h1 className="article-title">{post.title}</h1>
+        <p className="article-meta">
+          {formatDate(post.date)} · {post.category} · 约 {post.minutes} 分钟
+        </p>
+        {post.tags.length > 0 ? (
+          <div className="post-tags">
+            {post.tags.map((t) => (
+              <Link key={t} to={`/blog?tag=${encodeURIComponent(t)}`} className="tag-pill">
+                #{t}
+              </Link>
+            ))}
+          </div>
+        ) : null}
+        {post.cover ? (
+          <div className="article-cover">
+            <img src={post.cover} alt={post.title} />
+          </div>
         ) : null}
       </div>
 
-      <article className="article">
-        <div className="article-head">
-          <h1 className="article-title">{post.title}</h1>
-          <div className="article-meta">
-            <span>{formatDate(post.published_at)}</span>
-            <span>·</span>
-            <span>{post.category || '未分类'}</span>
-            <span>·</span>
-            <span>约 {readingTime(post.content_md)} 分钟</span>
-            {post.status === 'draft' ? <span className="badge draft">草稿（仅自己可见）</span> : null}
-          </div>
-          {post.tags?.length ? (
-            <div className="post-tags" style={{ marginTop: 12 }}>
-              {post.tags.map((tag) => (
-                <Link key={tag} to={`/tag/${encodeURIComponent(tag)}`} className="tag-pill">
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          ) : null}
-        </div>
+      <MarkdownView markdown={post.body} />
 
-        {post.cover ? (
-          <div style={{ marginBottom: 20 }}>
-            <img src={post.cover} alt={post.title} style={{ borderRadius: 12, width: '100%' }} />
-          </div>
-        ) : null}
-
-        <MarkdownView markdown={post.content_md} />
-      </article>
-    </div>
+      <nav className="article-nav">
+        {next ? (
+          <Link className="article-nav-item" to={`/blog/${encodeURIComponent(next.slug)}`}>
+            <span className="muted">← 上一篇</span>
+            <span>{next.title}</span>
+          </Link>
+        ) : (
+          <span />
+        )}
+        {prev ? (
+          <Link className="article-nav-item right" to={`/blog/${encodeURIComponent(prev.slug)}`}>
+            <span className="muted">下一篇 →</span>
+            <span>{prev.title}</span>
+          </Link>
+        ) : (
+          <span />
+        )}
+      </nav>
+    </article>
   )
 }

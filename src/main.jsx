@@ -1,91 +1,58 @@
-import React from 'react'
+import { StrictMode, Suspense, lazy, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
-import { HashRouter, Link, Route, Routes } from 'react-router-dom'
-
-import 'highlight.js/styles/github.css'
+import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
 import './styles.css'
+import Layout from './components/Layout'
+import AcademicHome from './pages/AcademicHome'
+import NotFound from './pages/NotFound'
+import { Spinner } from './components/ui'
 
-import { AuthProvider } from './auth'
-import { Layout, RequireAuth, ToastProvider } from './components'
-import Home from './pages/Home'
-import PostDetail from './pages/PostDetail'
-import TagsPage from './pages/TagsPage'
-import About from './pages/About'
-import Login from './pages/Login'
-import Admin from './pages/Admin'
-import PostEditor from './pages/PostEditor'
-import ProfileEditor from './pages/ProfileEditor'
+const BlogList = lazy(() => import('./pages/BlogList'))
+const PostDetail = lazy(() => import('./pages/PostDetail'))
+const TagsPage = lazy(() => import('./pages/TagsPage'))
 
-function NotFound() {
-  return (
-    <div className="empty">
-      <div style={{ fontSize: 15 }}>页面不存在</div>
-      <div style={{ marginTop: 12 }}>
-        <Link to="/" className="btn primary">
-          回到首页
-        </Link>
-      </div>
-    </div>
-  )
+function ScrollToTop() {
+  const { pathname, search } = useLocation()
+  useEffect(() => {
+    if (!search.includes('page=')) window.scrollTo({ top: 0 })
+  }, [pathname, search])
+  return null
 }
 
-function App() {
-  return (
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
     <HashRouter>
+      <ScrollToTop />
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/tag/:tag" element={<Home />} />
-          <Route path="/category/:category" element={<Home />} />
-          <Route path="/post/:id" element={<PostDetail />} />
-          <Route path="/tags" element={<TagsPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<AcademicHome />} />
           <Route
-            path="/admin"
+            path="/blog"
             element={
-              <RequireAuth>
-                <Admin />
-              </RequireAuth>
+              <Suspense fallback={<Spinner />}>
+                <BlogList />
+              </Suspense>
             }
           />
           <Route
-            path="/admin/new"
+            path="/blog/:slug"
             element={
-              <RequireAuth>
-                <PostEditor />
-              </RequireAuth>
+              <Suspense fallback={<Spinner />}>
+                <PostDetail />
+              </Suspense>
             }
           />
           <Route
-            path="/admin/edit/:id"
+            path="/tags"
             element={
-              <RequireAuth>
-                <PostEditor />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin/profile"
-            element={
-              <RequireAuth>
-                <ProfileEditor />
-              </RequireAuth>
+              <Suspense fallback={<Spinner />}>
+                <TagsPage />
+              </Suspense>
             }
           />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </HashRouter>
-  )
-}
-
-createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </AuthProvider>
-  </React.StrictMode>,
+  </StrictMode>,
 )
