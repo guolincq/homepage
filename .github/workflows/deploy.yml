@@ -12,7 +12,7 @@ on:
 
 # 缺少 pages:write / id-token:write 时 deploy-pages 会 403
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
@@ -39,26 +39,22 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      # 不能用 npm ci：package-lock.json 在 Windows 生成，只含
+      # @rollup/rollup-win32-x64-msvc，缺 Linux 条目；npm ci 严格按锁还原
+      # 会导致 rollup 原生二进制缺失，vite build 直接崩（npm/cli#4828）。
+      # 用 npm install 让 npm 按当前平台重新解析 optional 依赖。
       - name: Install dependencies
-        run: npm ci --no-audit --no-fund
+        run: |
+          npm install --no-audit --no-fund
+          if [ ! -d node_modules/@rollup/rollup-linux-x64-gnu ]; then
+            echo "rollup linux binary missing, installing explicitly"
+            npm install --no-save @rollup/rollup-linux-x64-gnu
+          fi
 
       - name: Build
         run: |
           set -o pipefail
           npm run build 2>&1 | tee build.log
-
-      - name: Dump build log to debug branch
-        if: failure()
-        run: |
-          git config user.name "ci-bot"
-          git config user.email "ci-bot@users.noreply.github.com"
-          git fetch origin ci-debug 2>/dev/null || true
-          git checkout -B ci-debug
-          mkdir -p .cidebug
-          cp build.log .cidebug/build.log 2>/dev/null || true
-          git add -f .cidebug
-          git commit -m "ci-debug: build log ${GITHUB_RUN_ID}" || echo "no change"
-          git push -f origin ci-debug
 
       - name: Check dist
         run: ls -la dist && test -f dist/index.html
