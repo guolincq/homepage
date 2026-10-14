@@ -12,7 +12,7 @@ on:
 
 # 缺少 pages:write / id-token:write 时 deploy-pages 会 403
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -43,7 +43,22 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build
-        run: npm run build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
+
+      - name: Dump build log to debug branch
+        if: failure()
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          git fetch origin ci-debug 2>/dev/null || true
+          git checkout -B ci-debug
+          mkdir -p .cidebug
+          cp build.log .cidebug/build.log 2>/dev/null || true
+          git add -f .cidebug
+          git commit -m "ci-debug: build log ${GITHUB_RUN_ID}" || echo "no change"
+          git push -f origin ci-debug
 
       - name: Check dist
         run: ls -la dist && test -f dist/index.html
