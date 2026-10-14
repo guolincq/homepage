@@ -65,9 +65,9 @@ export const PROFILE = {
 
   social: [
     { label: 'GitHub', icon: '🐙', url: 'https://github.com/guolincq' },
-    // 简历里未提供，拿到后取消注释即可显示
+    { label: 'ORCID', icon: '🆔', url: 'https://orcid.org/0000-0003-4310-593X' },
+    // Google Scholar 仍未提供，拿到后取消注释即可显示
     // { label: 'Google Scholar', icon: '🎓', url: 'https://scholar.google.com/citations?user=XXXX' },
-    // { label: 'ORCID', icon: '🆔', url: 'https://orcid.org/0000-0000-0000-0000' },
   ],
 }
 
@@ -288,7 +288,7 @@ export const PUBLICATIONS = [
     venueShort: 'LPSC 2024',
     award: '',
     links: { pdf: '', code: '', bib: '', doi: '' },
-    note: '简历未提供 DOI，标题待手动补齐。',
+    note: '会议论文（LPSC 2024），无 DOI。',
   },
   {
     id: 'patent-2023-mars-calibration',
